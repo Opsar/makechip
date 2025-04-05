@@ -69,11 +69,9 @@ begin
 
     -- Colour logic here
     if video_active = '1' then
-        if pix_x < "100" then
-            R <= "11";
-            G <= "00";
-            B <= "00";
-        end if;
+        R <= "11";
+        G <= "11";
+        B <= "11";
     else
         R <= "00";
         G <= "00";
