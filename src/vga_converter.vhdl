@@ -48,8 +48,8 @@ begin
     process(clk)
     begin
         if rising_edge(clk) then
-            x_pos <= std_logic_vector(to_unsigned(pix_x, x_pos'length));
-            y_pos <= std_logic_vector(to_unsigned(pix_y, y_pos'length));
+            x_pos <= std_logic_vector(to_unsigned(pix_x_int, x_pos'length));
+            y_pos <= std_logic_vector(to_unsigned(pix_y_int, y_pos'length));
         end if;
     end process;
     V0: vga_sync_gen port map(
