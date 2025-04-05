@@ -66,9 +66,19 @@ begin
 
     process(clk)
     begin
-      R <= "11";
-      G <= "11";
-      B <= "11";
+
+    -- Colour logic here
+    if video_active = '1' then
+        if pix_x < "100" then
+            R <= "11";
+            G <= "00";
+            B <= "00";
+        end if;
+    else
+        R <= "00";
+        G <= "00";
+        B <= "00";
+    end if;
     end process;
 
     U0  :   KBD_ENC port map(

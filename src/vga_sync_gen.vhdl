@@ -16,31 +16,31 @@ end entity;
 
 architecture rtl of vga_sync_gen is
   -- Horizontal constants
-  --constant h_display : integer := 640; -- Horizontal display width
-  --constant h_back    : integer := 48; -- Horizontal left border
-  --constant h_fron   : integer := 16; -- Horizontal right border
+  constant h_display : integer := 640; -- Horizontal display width
+  constant h_back    : integer := 48; -- Horizontal left border
+  constant h_front   : integer := 16; -- Horizontal right border
   --constant h_sync    : integer := 96; -- Horizontal sync width
 
   -- Vertical constants
-  --constant v_display : integer := 480; -- Vertical display height
+  constant v_display : integer := 480; -- Vertical display height
   --constant v_top     : integer := 33; -- Vertical top border
-  --constant v_bottom  : integer := 10; -- Vertical bottom border
+  constant v_bottom  : integer := 10; -- Vertical bottom border
   --constant v_sync    : integer := 2; -- Vertical sync lines
 
   -- Derived constants
-  --constant h_sync_START : integer := 640 + h_fron;
-  --constant h_sync_END   : integer := 640 + h_fron + h_sync - 1;
-  --constant h_max        : integer := 640 + h_back + h_fron + h_sync - 1;
-  --constant v_sync_START : integer := v_display + v_bottom;
-  --constant v_sync_END   : integer := v_display + v_bottom + v_sync - 1;
-  --constant v_max        : integer := v_display + v_top + v_bottom + v_sync - 1;
+  constant h_sync_start : integer := h_display + h_front;
+  constant h_sync_end   : integer := h_display + h_front + 96 - 1;
+  constant h_max        : integer := h_display + h_back + h_front + 96 - 1;
+  constant v_sync_start : integer := v_display + v_bottom;
+  constant v_sync_end   : integer := v_display + v_bottom + 2 - 1;
+  constant v_max        : integer := v_display + 33 + v_bottom + 2 - 1;
 
   signal hmaxxed, vmaxxed   : std_logic;
   signal hpos_cnt, vpos_cnt : unsigned(9 downto 0) := to_unsigned(0, 10);
 begin
-  hmaxxed <= '1' when (hpos_cnt = 640+48+16+96-1 or reset = '0') else
+  hmaxxed <= '1' when (hpos_cnt = h_max or reset = '0') else
     '0';
-  vmaxxed <= '1' when (vpos_cnt = 480+33+10+2-1 or reset = '0') else
+  vmaxxed <= '1' when (vpos_cnt = v_max or reset = '0') else
     '0';
 
   hpos <= std_logic_vector(hpos_cnt);
@@ -50,7 +50,7 @@ begin
   process (clk)
   begin
     if rising_edge(clk) then
-        if (hpos_cnt >= 640+10 and hpos_cnt <= 640+16+96-1) then
+        if (hpos_cnt >= h_sync_start and hpos_cnt <= h_sync_end) then
             hsync <= '1';
         else
             hsync <= '0';
@@ -67,7 +67,7 @@ begin
   process (clk)
   begin
     if rising_edge(clk) then
-      if (vpos_cnt >= 480+10 and vpos_cnt <= 480+10+2-1) then
+      if (vpos_cnt >= v_sync_start and vpos_cnt <= v_sync_end) then
         vsync <= '1';
       else
         vsync <= '0';
@@ -82,5 +82,5 @@ begin
     end if;
   end process;
 
-  display_on <= '1' when ((hpos_cnt<640) and (vpos_cnt<480)) else '0';
+  display_on <= '1' when ((hpos_cnt<h_display) and (vpos_cnt<v_display)) else '0';
 end architecture;
