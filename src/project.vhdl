@@ -16,34 +16,36 @@ entity tt_um_example is
 end tt_um_example;
 
 architecture Behavioral of tt_um_example is
-    component ps2_rx
-        port(
-            clk, reset: in std_logic;
-            ps2d, ps2c: in std_logic;
-            rx_en: in std_logic;
-            rx_done_tick: out std_logic;
-            dout: out std_logic_vector(7 downto 0)
-	    );
+    component KBD_ENC
+        port ( clk	                : in std_logic;			-- system clock (100 MHz)
+	        rst		        : in std_logic;			-- reset signal
+         PS2KeyboardCLK	        : in std_logic; 		-- USB keyboard PS2 clock
+         PS2KeyboardData	: in std_logic;			-- USB keyboard PS2 data
+         data			: out std_logic_vector(7 downto 0); 	-- tile data
+         ps2_code_new   : out std_logic
+    );
     end component;
 
-    signal rx_done_tick: std_logic;
-    signal rx_en: std_logic;
-
-    signal key_bus: std_logic_vector(7 downto 0);
+    signal key_bus, key_reg: std_logic_vector(7 downto 0);
+    signal ps2_code_new: std_logic;
 
 
 begin
 
-    U0  :   ps2_rx port map(
-                clk => clk, rst_n => reset,
-                ui_in(0) => ps2d, ui_in(1) => ps2c, dout => key_bus, 
-                rx_en => rx_en, rx_done_tick => rx_done_tick
+    U0  :   KBD_ENC port map(
+                clk => clk, rst => rst_n,
+                PS2KeyboardData => ui_in(0), PS2KeyboardCLK => ui_in(1), data => key_bus, 
+                ps2_code_new => ps2_code_new
             );
+    process(clk, rst_n)
+    begin
+        if rst_n = '1' then
+            key_reg <= (others => 0);
+        elsif rising_edge(clk) and ps2_code_new = '1' then
+            key_reg <= key_bus;
+        end if;
+    end process;
 
-
-    --uo_out <= std_logic_vector(unsigned(ui_in) + unsigned(uio_in));
-    uo_out <= not (ui_in and uio_in);
-    uio_out <= "00000000";
-    uio_oe <= "00000000";
-
+    uo_out <= key_reg;
+    uio_out(0) <= ps2_code_new;
 end Behavioral;
