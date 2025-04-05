@@ -8,7 +8,7 @@ entity tt_um_example is
         uo_out  : out std_logic_vector(7 downto 0);
         uio_in  : in  std_logic_vector(7 downto 0);
         uio_out : out std_logic_vector(7 downto 0);
-        uio_oe  : out std_logic_vector(7 downto 0) := "00000000";
+        uio_oe  : out std_logic_vector(7 downto 0);
         ena     : in  std_logic;
         clk     : in  std_logic;
         rst_n   : in  std_logic
@@ -62,8 +62,9 @@ architecture Behavioral of tt_um_example is
 
 begin
 
-    uio_out <= hsync & B(0) & G(0) & R(0) & vsync & B(1) & G(1) & R(1);
-
+    uo_out <= hsync & B(0) & G(0) & R(0) & vsync & B(1) & G(1) & R(1);
+    uio_oe <= "00000000";
+    uio_out <= "00000000";
     process(clk)
     begin
 
@@ -104,6 +105,6 @@ begin
         end if;
     end process;
 
-    uo_out <= key_reg;
+    -- uo_out <= key_reg;
 
 end Behavioral;
