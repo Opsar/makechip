@@ -16,7 +16,30 @@ entity tt_um_example is
 end tt_um_example;
 
 architecture Behavioral of tt_um_example is
+    component ps2_rx
+        port(
+            clk, reset: in std_logic;
+            ps2d, ps2c: in std_logic;
+            rx_en: in std_logic;
+            rx_done_tick: out std_logic;
+            dout: out std_logic_vector(7 downto 0)
+	    );
+    end component;
+
+    signal rx_done_tick: std_logic;
+    signal rx_en: std_logic;
+
+    signal key_bus: std_logic_vector(7 downto 0);
+
+
 begin
+
+    U0  :   ps2_rx port map(
+                clk => clk, rst_n => reset,
+                ui_in(0) => ps2d, ui_in(1) => ps2c, dout => key_bus, 
+                rx_en => rx_en, rx_done_tick => rx_done_tick
+            );
+
 
     --uo_out <= std_logic_vector(unsigned(ui_in) + unsigned(uio_in));
     uo_out <= not (ui_in and uio_in);
