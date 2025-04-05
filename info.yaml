@@ -21,8 +21,10 @@ project:
   #          the shuttle and VHDL support may be dropped for future shuttles if we see low usage.
   source_files:
     - "project.vhdl"
-    - "key_enc"
-    - "vga_enc"
+    - "key_enc.vhdl"
+    - "vga_sync_gen.vhdl"
+    - "vga_converter.vhdl"
+
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 pinout:

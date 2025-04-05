@@ -1,4 +1,7 @@
 v 4
+file . "src/vga_sync_gen.vhdl" "79b2cac3852451167412c2fe39c680fd5ccd16eb" "20250405152330.147":
+  entity vga_sync_gen at 1( 0) + 0 on 13;
+  architecture rtl of vga_sync_gen at 17( 379) + 0 on 14;
 file . "src/project.vhdl" "5bd9c3d9075e39680a1902105665cef32fb082c8" "20250405102728.052":
   entity tt_um_example at 1( 0) + 0 on 11;
   architecture behavioral of tt_um_example at 18( 490) + 0 on 12;

@@ -9,6 +9,7 @@ TEST = "01100101101"
 
 @cocotb.test()
 async def test_project(dut):
+
     dut._log.info("Start")
 
     # Set the clock period to 10 us (100 KHz)

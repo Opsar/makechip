@@ -26,26 +26,76 @@ architecture Behavioral of tt_um_example is
     );
     end component;
 
+    component vga_converter
+    port(
+        clk, rst   : in std_logic;
+        x_pos, y_pos: out   std_logic_vector(2 downto 0);
+        hsync      : out std_logic;
+        vsync      : out std_logic;
+        display_on : out std_logic;
+        hpos       : in std_logic_vector(9 downto 0);
+        vpos       : in std_logic_vector(9 downto 0)
+    );
+    end component;
+
+    component vga_sync_gen
+        port (
+            clk        : in std_logic;
+            reset      : in std_logic;
+            hsync      : out std_logic;
+            vsync      : out std_logic;
+            display_on : out std_logic;
+            hpos       : out std_logic_vector(9 downto 0);
+            vpos       : out std_logic_vector(9 downto 0)
+    );
+    end component;
+
     signal key_bus, key_reg: std_logic_vector(7 downto 0);
     signal ps2_code_new: std_logic;
+    signal hsync, vsync: std_logic;
+    signal R, G, B: std_logic_vector(1 downto 0);
+    signal video_active: std_logic;
+    signal pix_x, pix_y: std_logic_vector(2 downto 0);
+    signal hpos, vpos: std_logic_vector(9 downto 0);
+
 
 
 begin
+
+    uio_out <= hsync & B(0) & G(0) & R(0) & vsync & B(1) & G(1) & R(1);
+
+    process(clk)
+    begin
+      R <= "11";
+      G <= "11";
+      B <= "11";
+    end process;
 
     U0  :   KBD_ENC port map(
                 clk => clk, rst => rst_n,
                 PS2KeyboardData => ui_in(0), PS2KeyboardCLK => ui_in(1), data => key_bus, 
                 ps2_code_new => ps2_code_new
             );
+
+    V0  :   vga_converter port map(
+        clk => clk, rst => rst_n, x_pos => pix_x, y_pos => pix_y, 
+        vsync => vsync, hsync => hsync, display_on => video_active, hpos => hpos,
+        vpos => vpos
+    );
+
+    V1  :   vga_sync_gen port map(
+        clk => clk, reset => rst_n, hsync => hsync, vsync => vsync, 
+        display_on => video_active, hpos => hpos, vpos => vpos
+    );
     process(clk, rst_n)
     begin
         if rst_n = '1' then
-            key_reg <= (others => 0);
+            key_reg <= (others => '0');
         elsif rising_edge(clk) and ps2_code_new = '1' then
             key_reg <= key_bus;
         end if;
     end process;
 
     uo_out <= key_reg;
-    uio_out(0) <= ps2_code_new;
+
 end Behavioral;
